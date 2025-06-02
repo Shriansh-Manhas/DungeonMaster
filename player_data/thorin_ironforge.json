@@ -1,0 +1,42 @@
+{
+  "id": "aa545345-12a2-4a06-8205-66227a7d9e37",
+  "name": "Thorin Ironforge",
+  "character_class": "Fighter",
+  "level": 2,
+  "race": "Dwarf",
+  "background": "Soldier",
+  "alignment": "Lawful Good",
+  "stats": {
+    "STR": 16,
+    "DEX": 12,
+    "CON": 15,
+    "INT": 10,
+    "WIS": 14,
+    "CHA": 8
+  },
+  "skills": [
+    "Athletics",
+    "Intimidation",
+    "Perception",
+    "Survival"
+  ],
+  "equipment": [
+    "Chain Mail",
+    "Shield",
+    "Warhammer",
+    "Handaxe (2)",
+    "Explorer's Pack",
+    "Military Rank Insignia"
+  ],
+  "backstory": "A veteran soldier who served in the King's Guard. Left after witnessing corruption, now seeks honor as an adventurer.",
+  "personality_traits": [
+    "I face problems head-on with direct solutions",
+    "I enjoy displays of strength and breaking things"
+  ],
+  "ideals": "Responsibility. I do what I must and obey just authority.",
+  "bonds": "My honor is my life. I would rather die than compromise my principles.",
+  "flaws": "I have little respect for anyone who is not a proven warrior.",
+  "hit_points": 20,
+  "armor_class": 18,
+  "created_at": "2025-06-02T19:41:50.805656"
+}

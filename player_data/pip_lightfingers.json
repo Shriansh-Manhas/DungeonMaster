@@ -1,0 +1,45 @@
+{
+  "id": "da12056c-c1d0-457d-93b9-69edc71630f3",
+  "name": "Pip Lightfingers",
+  "character_class": "Rogue",
+  "level": 2,
+  "race": "Halfling",
+  "background": "Criminal",
+  "alignment": "Chaotic Good",
+  "stats": {
+    "STR": 10,
+    "DEX": 16,
+    "CON": 14,
+    "INT": 12,
+    "WIS": 13,
+    "CHA": 15
+  },
+  "skills": [
+    "Stealth",
+    "Sleight of Hand",
+    "Investigation",
+    "Deception",
+    "Insight",
+    "Perception"
+  ],
+  "equipment": [
+    "Leather Armor",
+    "Shortsword",
+    "Shortbow",
+    "Thieves' Tools",
+    "Burglar's Pack",
+    "Crowbar",
+    "Dark Cloak"
+  ],
+  "backstory": "A former street thief who turned to adventuring after helping the wrong person escape from the law.",
+  "personality_traits": [
+    "I always have a plan for what to do when things go wrong",
+    "I am incredibly slow to trust, but those who prove themselves earn my loyalty"
+  ],
+  "ideals": "Redemption. Everyone deserves a second chance.",
+  "bonds": "I'm trying to pay back a debt I owe to my generous benefactor.",
+  "flaws": "When I see something valuable, I can't think about anything but how to steal it.",
+  "hit_points": 16,
+  "armor_class": 13,
+  "created_at": "2025-06-02T19:41:50.805656"
+}

@@ -1,0 +1,30 @@
+{
+  "name": "The Brave Companions",
+  "members": [],
+  "formation": "Thorin takes point, Elaria and Marcus in the middle, Pip scouts ahead or brings up the rear",
+  "shared_equipment": [
+    "Rope (50 feet)",
+    "Bedrolls (4)",
+    "Rations (10 days)",
+    "Torches (20)",
+    "Tinderbox",
+    "Crowbar",
+    "Hammer",
+    "Pitons (10)",
+    "Healing Potions (2)"
+  ],
+  "party_funds": 150,
+  "reputation": {
+    "Riverside Village": "friendly"
+  },
+  "active_quests": [],
+  "completed_quests": [],
+  "notes": "The party formed after meeting at the Riverside Tavern. They have proven themselves capable of working together and are gaining a reputation as reliable problem-solvers.",
+  "created_at": "2025-06-02T19:41:50.814761",
+  "member_files": [
+    "thorin_ironforge.json",
+    "elaria_starweaver.json",
+    "pip_lightfingers.json",
+    "brother_marcus.json"
+  ]
+}

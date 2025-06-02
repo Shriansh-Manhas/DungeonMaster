@@ -1,0 +1,43 @@
+{
+  "id": "fc420306-ef2f-475b-8dc0-6cc3f901a5e4",
+  "name": "Brother Marcus",
+  "character_class": "Cleric",
+  "level": 2,
+  "race": "Human",
+  "background": "Acolyte",
+  "alignment": "Lawful Good",
+  "stats": {
+    "STR": 14,
+    "DEX": 10,
+    "CON": 15,
+    "INT": 12,
+    "WIS": 16,
+    "CHA": 13
+  },
+  "skills": [
+    "Medicine",
+    "Religion",
+    "Insight",
+    "Persuasion"
+  ],
+  "equipment": [
+    "Chain Shirt",
+    "Shield",
+    "Mace",
+    "Light Crossbow",
+    "Priest's Pack",
+    "Holy Symbol",
+    "Prayer Book"
+  ],
+  "backstory": "A devoted priest who left his temple to spread healing and hope in the wider world.",
+  "personality_traits": [
+    "I see omens in every event and action",
+    "I quote sacred texts in almost every situation"
+  ],
+  "ideals": "Faith. I trust that my deity will guide my actions.",
+  "bonds": "I would die to recover an ancient relic of my faith that was lost long ago.",
+  "flaws": "I judge others harshly, and myself even more severely.",
+  "hit_points": 18,
+  "armor_class": 16,
+  "created_at": "2025-06-02T19:41:50.805656"
+}

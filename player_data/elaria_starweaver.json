@@ -1,0 +1,43 @@
+{
+  "id": "5e943e33-9f82-4749-b377-42bb97141d5f",
+  "name": "Elaria Starweaver",
+  "character_class": "Wizard",
+  "level": 2,
+  "race": "Elf",
+  "background": "Sage",
+  "alignment": "Neutral Good",
+  "stats": {
+    "STR": 8,
+    "DEX": 14,
+    "CON": 13,
+    "INT": 16,
+    "WIS": 12,
+    "CHA": 11
+  },
+  "skills": [
+    "Arcana",
+    "History",
+    "Investigation",
+    "Medicine"
+  ],
+  "equipment": [
+    "Spellbook",
+    "Quarterstaff",
+    "Dagger",
+    "Component Pouch",
+    "Scholar's Pack",
+    "Ink and Quill",
+    "Spell Scroll (Magic Missile)"
+  ],
+  "backstory": "A young elf who spent decades studying ancient magic in great libraries. Seeks practical experience to complement theoretical knowledge.",
+  "personality_traits": [
+    "I am awkward in social situations",
+    "I speak without thinking, sometimes insulting others"
+  ],
+  "ideals": "Knowledge. The path to power and improvement is through understanding.",
+  "bonds": "The library where I learned is the most important place to me.",
+  "flaws": "I overlook obvious solutions in favor of complicated ones.",
+  "hit_points": 14,
+  "armor_class": 12,
+  "created_at": "2025-06-02T19:41:50.805656"
+}
