@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Setup script for D&D AI Dungeon Master
 Creates the proper directory structure and initializes the project.
@@ -87,6 +88,7 @@ def create_requirements_file():
 langchain-openai==0.1.23
 langchain-community==0.2.16
 langchain-core==0.2.38
+langchain-chroma==0.1.4
 chromadb==0.4.22
 tiktoken==0.7.0
 python-dotenv==1.0.0

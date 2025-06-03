@@ -171,6 +171,29 @@ This is a personal project I've been building in my spare time, so there are def
 - **Combat System**: Basic combat works but could be more sophisticated
 - **Voice Integration**: Text-to-speech would make this feel more immersive
 
+## Common Issues & Quick Fixes
+
+### "404 Error" or "Not Found" from OpenRouter
+This is the most common issue new users face:
+
+1. **Wrong API Key Type**: Make sure you have an OpenRouter key (starts with `sk-or-`), not an OpenAI key (starts with `sk-`)
+2. **Get the right key**: Go to [openrouter.ai](https://openrouter.ai) → Keys → Create new key
+3. **Test with free model**: The system defaults to a free Llama model that should work with any valid OpenRouter key
+
+### "Chroma was deprecated" Warning
+Update your dependencies:
+```bash
+pip uninstall langchain-community chromadb -y
+pip install langchain-chroma==0.1.4 langchain-community==0.2.16
+```
+
+### Character Files Missing or Corrupted
+Delete the `player_data` folder and restart - it'll recreate the examples:
+```bash
+rm -rf player_data/
+python main.py
+```
+
 ## Troubleshooting
 
 ### "API Key Error"

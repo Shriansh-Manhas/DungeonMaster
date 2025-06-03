@@ -16,7 +16,8 @@ class DMConfig:
         # Load API key from environment variable
         self.openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
         self.openrouter_base_url = "https://openrouter.ai/api/v1"
-        self.model_name = "openai/gpt-3.5-turbo"
+        # Use a more reliable model name that's definitely available on OpenRouter
+        self.model_name = "meta-llama/llama-3.1-8b-instruct:free"
         self.vector_db_path = "./dnd_vector_db"
         self.player_data_dir = "./player_data"
         
@@ -27,8 +28,10 @@ class DMConfig:
         # Memory settings
         self.conversation_window = 10  # Keep last 10 exchanges
         
-        # Vector store settings
-        self.embedding_model = "text-embedding-ada-002"
+        # Vector store settings - use a simpler local embedding for free usage
+        # This avoids the 404 error with OpenRouter embeddings
+        self.use_local_embeddings = True  # Use sentence-transformers instead of OpenAI
+        self.embedding_model = "all-MiniLM-L6-v2"  # Free local model
         self.similarity_search_k = 5
         
         # Validate required environment variables
@@ -38,6 +41,12 @@ class DMConfig:
                 "Please set it in your environment or create a .env file with:\n"
                 "OPENROUTER_API_KEY=your_api_key_here"
             )
+        
+        # Validate API key format
+        if not self.openrouter_api_key.startswith('sk-or-'):
+            print(f"Warning: Your API key doesn't look like an OpenRouter key.")
+            print(f"OpenRouter keys should start with 'sk-or-'")
+            print(f"Current key starts with: {self.openrouter_api_key[:10]}...")
     
     def validate_directories(self):
         """Ensure all required directories exist"""
@@ -56,8 +65,13 @@ class DMConfig:
     
     def get_embeddings_config(self) -> dict:
         """Get configuration for embeddings initialization"""
-        return {
-            "openai_api_key": self.openrouter_api_key,
-            "openai_api_base": self.openrouter_base_url,
-            "model": self.embedding_model
-        }
+        if self.use_local_embeddings:
+            return {
+                "model_name": self.embedding_model
+            }
+        else:
+            return {
+                "openai_api_key": self.openrouter_api_key,
+                "openai_api_base": self.openrouter_base_url,
+                "model": self.embedding_model
+            }

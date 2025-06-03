@@ -3,11 +3,23 @@ import uuid
 from typing import Dict, List, Optional
 from dataclasses import asdict
 
-from langchain_openai import OpenAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
-from ..models import NPC, Quest, Location
+# Import different embedding classes based on configuration
+try:
+    from langchain_openai import OpenAIEmbeddings
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+
+try:
+    from langchain_community.embeddings import HuggingFaceEmbeddings
+    HUGGINGFACE_AVAILABLE = True
+except ImportError:
+    HUGGINGFACE_AVAILABLE = False
+
+from ..models.game_elements import NPC, Quest, Location
 from ..config import DMConfig
 
 
@@ -17,16 +29,35 @@ class GameElementStore:
     def __init__(self, config: DMConfig):
         self.config = config
         
-        # Initialize embeddings (using OpenAI embeddings with OpenRouter)
-        embeddings_config = config.get_embeddings_config()
-        self.embeddings = OpenAIEmbeddings(**embeddings_config)
+        # Initialize embeddings based on configuration
+        if config.use_local_embeddings:
+            if not HUGGINGFACE_AVAILABLE:
+                raise ImportError(
+                    "HuggingFace embeddings not available. Install with:\n"
+                    "pip install sentence-transformers"
+                )
+            embeddings_config = config.get_embeddings_config()
+            self.embeddings = HuggingFaceEmbeddings(**embeddings_config)
+            print(f"Using local embeddings: {config.embedding_model}")
+        else:
+            if not OPENAI_AVAILABLE:
+                raise ImportError("OpenAI embeddings not available")
+            embeddings_config = config.get_embeddings_config()
+            self.embeddings = OpenAIEmbeddings(**embeddings_config)
+            print(f"Using OpenAI embeddings: {config.embedding_model}")
         
         # Initialize Chroma vector store
-        self.vector_store = Chroma(
-            persist_directory=config.vector_db_path,
-            embedding_function=self.embeddings,
-            collection_name="dnd_game_elements"
-        )
+        try:
+            self.vector_store = Chroma(
+                persist_directory=config.vector_db_path,
+                embedding_function=self.embeddings,
+                collection_name="dnd_game_elements"
+            )
+            print("Vector store initialized successfully")
+        except Exception as e:
+            print(f"Warning: Could not initialize vector store: {e}")
+            print("Continuing without vector search functionality...")
+            self.vector_store = None
         
         # In-memory storage for structured data
         self.npcs: Dict[str, NPC] = {}
@@ -37,6 +68,10 @@ class GameElementStore:
     
     def _load_existing_data(self):
         """Load existing data from vector store metadata"""
+        if not self.vector_store:
+            print("Skipping data load - no vector store available")
+            return
+            
         try:
             # This is a simplified approach - in production you might want separate collections
             all_docs = self.vector_store.get()
@@ -55,6 +90,8 @@ class GameElementStore:
                     elif metadata.get('type') == 'location':
                         location_data = json.loads(metadata['data'])
                         self.locations[doc_id] = Location(**location_data)
+                        
+                print(f"Loaded {len(self.npcs)} NPCs, {len(self.quests)} quests, {len(self.locations)} locations")
         except Exception as e:
             print(f"Warning: Could not load existing data: {e}")
     
@@ -63,26 +100,33 @@ class GameElementStore:
         if not npc.id:
             npc.id = str(uuid.uuid4())
         
-        # Create searchable text for vector store
-        npc_text = (
-            f"NPC: {npc.name}. {npc.description}. "
-            f"Personality: {npc.personality}. Role: {npc.role}. "
-            f"Location: {npc.location}. Dialogue style: {npc.dialogue_style}"
-        )
-        
-        # Add to vector store
-        doc = Document(
-            page_content=npc_text,
-            metadata={
-                'type': 'npc',
-                'id': npc.id,
-                'name': npc.name,
-                'data': json.dumps(asdict(npc))
-            }
-        )
-        
-        self.vector_store.add_documents([doc], ids=[npc.id])
+        # Store in memory first
         self.npcs[npc.id] = npc
+        
+        # Try to add to vector store if available
+        if self.vector_store:
+            try:
+                # Create searchable text for vector store
+                npc_text = (
+                    f"NPC: {npc.name}. {npc.description}. "
+                    f"Personality: {npc.personality}. Role: {npc.role}. "
+                    f"Location: {npc.location}. Dialogue style: {npc.dialogue_style}"
+                )
+                
+                # Add to vector store
+                doc = Document(
+                    page_content=npc_text,
+                    metadata={
+                        'type': 'npc',
+                        'id': npc.id,
+                        'name': npc.name,
+                        'data': json.dumps(asdict(npc))
+                    }
+                )
+                
+                self.vector_store.add_documents([doc], ids=[npc.id])
+            except Exception as e:
+                print(f"Warning: Could not add NPC to vector store: {e}")
         
         return npc.id
     
@@ -91,27 +135,34 @@ class GameElementStore:
         if not quest.id:
             quest.id = str(uuid.uuid4())
         
-        # Create searchable text for vector store
-        objectives_text = ', '.join(quest.objectives) if quest.objectives else 'No specific objectives'
-        quest_text = (
-            f"Quest: {quest.title}. {quest.description}. "
-            f"Objectives: {objectives_text}. Location: {quest.location}. "
-            f"Difficulty: {quest.difficulty}. Given by: {quest.giver}"
-        )
-        
-        # Add to vector store
-        doc = Document(
-            page_content=quest_text,
-            metadata={
-                'type': 'quest',
-                'id': quest.id,
-                'title': quest.title,
-                'data': json.dumps(asdict(quest))
-            }
-        )
-        
-        self.vector_store.add_documents([doc], ids=[quest.id])
+        # Store in memory first
         self.quests[quest.id] = quest
+        
+        # Try to add to vector store if available
+        if self.vector_store:
+            try:
+                # Create searchable text for vector store
+                objectives_text = ', '.join(quest.objectives) if quest.objectives else 'No specific objectives'
+                quest_text = (
+                    f"Quest: {quest.title}. {quest.description}. "
+                    f"Objectives: {objectives_text}. Location: {quest.location}. "
+                    f"Difficulty: {quest.difficulty}. Given by: {quest.giver}"
+                )
+                
+                # Add to vector store
+                doc = Document(
+                    page_content=quest_text,
+                    metadata={
+                        'type': 'quest',
+                        'id': quest.id,
+                        'title': quest.title,
+                        'data': json.dumps(asdict(quest))
+                    }
+                )
+                
+                self.vector_store.add_documents([doc], ids=[quest.id])
+            except Exception as e:
+                print(f"Warning: Could not add quest to vector store: {e}")
         
         return quest.id
     
@@ -120,32 +171,43 @@ class GameElementStore:
         if not location.id:
             location.id = str(uuid.uuid4())
         
-        # Create searchable text for vector store
-        features_text = ', '.join(location.notable_features) if location.notable_features else 'No notable features'
-        location_text = (
-            f"Location: {location.name}. {location.description}. "
-            f"Type: {location.type}. Features: {features_text}. "
-            f"Atmosphere: {location.atmosphere}"
-        )
-        
-        # Add to vector store
-        doc = Document(
-            page_content=location_text,
-            metadata={
-                'type': 'location',
-                'id': location.id,
-                'name': location.name,
-                'data': json.dumps(asdict(location))
-            }
-        )
-        
-        self.vector_store.add_documents([doc], ids=[location.id])
+        # Store in memory first
         self.locations[location.id] = location
+        
+        # Try to add to vector store if available
+        if self.vector_store:
+            try:
+                # Create searchable text for vector store
+                features_text = ', '.join(location.notable_features) if location.notable_features else 'No notable features'
+                location_text = (
+                    f"Location: {location.name}. {location.description}. "
+                    f"Type: {location.type}. Features: {features_text}. "
+                    f"Atmosphere: {location.atmosphere}"
+                )
+                
+                # Add to vector store
+                doc = Document(
+                    page_content=location_text,
+                    metadata={
+                        'type': 'location',
+                        'id': location.id,
+                        'name': location.name,
+                        'data': json.dumps(asdict(location))
+                    }
+                )
+                
+                self.vector_store.add_documents([doc], ids=[location.id])
+            except Exception as e:
+                print(f"Warning: Could not add location to vector store: {e}")
         
         return location.id
     
     def search_elements(self, query: str, element_type: Optional[str] = None, k: int = 5) -> List[Dict]:
         """Search for game elements by similarity"""
+        if not self.vector_store:
+            print("Vector store not available, falling back to simple search")
+            return self._simple_search(query, element_type, k)
+            
         try:
             docs = self.vector_store.similarity_search(query, k=k)
             
@@ -166,8 +228,36 @@ class GameElementStore:
             
             return results
         except Exception as e:
-            print(f"Warning: Search failed: {e}")
-            return []
+            print(f"Warning: Vector search failed, falling back to simple search: {e}")
+            return self._simple_search(query, element_type, k)
+    
+    def _simple_search(self, query: str, element_type: Optional[str] = None, k: int = 5) -> List[Dict]:
+        """Fallback search when vector store is not available"""
+        results = []
+        query_lower = query.lower()
+        
+        # Search through stored elements
+        if element_type != 'quest' and element_type != 'location':
+            for npc in list(self.npcs.values())[:k]:
+                if (query_lower in npc.name.lower() or 
+                    query_lower in npc.description.lower() or
+                    query_lower in npc.location.lower()):
+                    results.append(asdict(npc))
+        
+        if element_type != 'npc' and element_type != 'location':
+            for quest in list(self.quests.values())[:k]:
+                if (query_lower in quest.title.lower() or 
+                    query_lower in quest.description.lower() or
+                    query_lower in quest.location.lower()):
+                    results.append(asdict(quest))
+        
+        if element_type != 'npc' and element_type != 'quest':
+            for location in list(self.locations.values())[:k]:
+                if (query_lower in location.name.lower() or 
+                    query_lower in location.description.lower()):
+                    results.append(asdict(location))
+        
+        return results[:k]
     
     def get_relevant_context(self, current_situation: str) -> Dict[str, List]:
         """Get relevant NPCs, quests, and locations for current situation"""
@@ -224,10 +314,11 @@ class GameElementStore:
     
     def persist(self):
         """Persist the vector store to disk"""
-        try:
-            self.vector_store.persist()
-        except Exception as e:
-            print(f"Warning: Could not persist vector store: {e}")
+        if self.vector_store:
+            try:
+                self.vector_store.persist()
+            except Exception as e:
+                print(f"Warning: Could not persist vector store: {e}")
     
     def clear_all_data(self):
         """Clear all data from the store (use with caution!)"""
@@ -236,10 +327,11 @@ class GameElementStore:
         self.locations.clear()
         
         # Clear vector store
-        try:
-            # This is a bit hacky - ChromaDB doesn't have a direct clear method
-            all_docs = self.vector_store.get()
-            if all_docs and 'ids' in all_docs:
-                self.vector_store.delete(ids=all_docs['ids'])
-        except Exception as e:
-            print(f"Warning: Could not clear vector store: {e}")
+        if self.vector_store:
+            try:
+                # This is a bit hacky - ChromaDB doesn't have a direct clear method
+                all_docs = self.vector_store.get()
+                if all_docs and 'ids' in all_docs:
+                    self.vector_store.delete(ids=all_docs['ids'])
+            except Exception as e:
+                print(f"Warning: Could not clear vector store: {e}")

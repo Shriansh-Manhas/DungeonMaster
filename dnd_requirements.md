@@ -39,6 +39,7 @@ langchain==0.2.16
 langchain-openai==0.1.23
 langchain-community==0.2.16
 langchain-core==0.2.38
+langchain-chroma==0.1.4
 chromadb==0.4.22
 tiktoken==0.7.0
 python-dotenv==1.0.0
