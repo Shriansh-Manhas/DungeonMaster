@@ -18,17 +18,11 @@ After months of tinkering with LangChain and various AI models, this is what I c
 
 ## What Makes This Different
 
-### It Actually Remembers Everything
+### It Remembers Everything
 Your characters, their relationships, ongoing quests, reputation in different towns – it's all stored locally and referenced in every interaction. The AI DM knows that Thorin doesn't trust magic users and that your party still owes money to the blacksmith in Riverside Village.
 
 ### Smart Context Awareness
 Instead of generic responses, the AI considers your actual character sheets. It knows your wizard can't cast fireball yet, remembers that your rogue has thieves' tools, and won't suggest solutions that don't fit your party's capabilities.
-
-### No Monthly Fees
-Once you have an OpenRouter API key (which costs pennies per conversation), everything runs locally. Your campaign data belongs to you, stored in simple JSON files you can backup or modify.
-
-### Built for Real D&D
-This isn't a simplified version of D&D – it works with actual character sheets, tracks real stats, and handles complex party dynamics. I've been using it for my own campaigns for months.
 
 ## Getting Started
 
