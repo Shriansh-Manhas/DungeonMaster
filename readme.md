@@ -2,7 +2,7 @@
 
 Ever wanted to play D&D but couldn't find a DM? Or maybe you're a DM who's tired of keeping track of a million NPCs and quest details? I built this AI-powered Dungeon Master to solve exactly those problems.
 
-This isn't just another chatbot – it's a full-featured D&D companion that remembers your characters, tracks your campaigns, and generates rich, contextual stories that actually make sense with your party's abilities and backstories.
+It's a full-featured D&D companion that remembers your characters, tracks your campaigns, and generates rich, contextual stories that actually make sense with your party's abilities and backstories.
 
 ## Why I Built This
 
